@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Amortización - Terreno Inmobiliario</title>
+    <title>Calculadora de amortización VALENTRIA - JUMILLA</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         body {
@@ -15,7 +15,7 @@
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             background: white;
             border-radius: 15px;
@@ -60,10 +60,11 @@
             font-size: 1.4em;
         }
         
-        .input-grid {
+        .basic-params {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
+            margin-bottom: 30px;
         }
         
         .input-group {
@@ -77,7 +78,7 @@
             color: #34495e;
         }
         
-        .input-group input {
+        .input-group input, .input-group select {
             padding: 12px;
             border: 2px solid #e1e8ed;
             border-radius: 8px;
@@ -85,10 +86,84 @@
             transition: border-color 0.3s ease;
         }
         
-        .input-group input:focus {
+        .input-group input:focus, .input-group select:focus {
             outline: none;
             border-color: #3498db;
             box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        .payment-strategy {
+            background: #ffffff;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .payment-strategy h3 {
+            margin: 0 0 15px 0;
+            color: #2c3e50;
+            font-size: 1.2em;
+        }
+        
+        .strategy-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .strategy-option {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .strategy-option input[type="radio"] {
+            margin-right: 8px;
+        }
+        
+        .strategy-option label {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .strategy-option input[type="radio"]:checked + label {
+            border-color: #3498db;
+            background: #f0f8ff;
+        }
+        
+        .yearly-percentages {
+            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .yearly-percentages.active {
+            display: grid;
+        }
+        
+        .year-input {
+            text-align: center;
+        }
+        
+        .year-input label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #34495e;
+            font-size: 0.9em;
+        }
+        
+        .year-input input {
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
         }
         
         .calculate-btn {
@@ -102,6 +177,7 @@
             cursor: pointer;
             transition: transform 0.2s ease;
             margin: 20px 0;
+            width: 100%;
         }
         
         .calculate-btn:hover {
@@ -236,6 +312,16 @@
             font-weight: bold;
         }
         
+        .info-box {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            color: #1565c0;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.9em;
+        }
+        
         @media (max-width: 768px) {
             .container {
                 margin: 10px;
@@ -246,8 +332,16 @@
                 padding: 20px;
             }
             
-            .input-grid {
+            .basic-params {
                 grid-template-columns: 1fr;
+            }
+            
+            .strategy-selector {
+                flex-direction: column;
+            }
+            
+            .yearly-percentages {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
             }
         }
     </style>
@@ -255,18 +349,18 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🏗️ Calculadora de Amortización VALENTRIA - JUMILLA</h1>
-            <p>Herramienta profesional para análisis de financiación de terrenos</p>
+            <h1>🏗️ Calculadora de amortización VALENTRIA - JUMILLA</h1>
+            <p>Herramienta profesional avanzada para análisis de financiación de terrenos</p>
         </div>
         
         <div class="main-content">
             <div class="alert">
-                <strong>💡 Instrucciones:</strong> Modifica los parámetros de entrada para evaluar diferentes escenarios de financiación. Los cálculos se actualizarán automáticamente.
+                <strong>🚀 Nueva Versión Mejorada:</strong> Ahora puedes configurar diferentes porcentajes de capital para cada año, hasta 10 años de plazo. Elige entre estrategias predefinidas o personaliza completamente.
             </div>
             
             <div class="input-section">
-                <h2>📊 Parámetros de Financiación</h2>
-                <div class="input-grid">
+                <h2>📊 Parámetros Básicos</h2>
+                <div class="basic-params">
                     <div class="input-group">
                         <label for="valorTerreno">Valor del Terreno (€)</label>
                         <input type="number" id="valorTerreno" value="758807.44" step="0.01">
@@ -276,15 +370,106 @@
                         <input type="number" id="tasaInteres" value="3.25" step="0.01">
                     </div>
                     <div class="input-group">
-                        <label for="porcentajeCapital">Porcentaje de Capital Anual (años 1-5) (%)</label>
-                        <input type="number" id="porcentajeCapital" value="1.0" step="0.1" min="0.1" max="20">
-                    </div>
-                    <div class="input-group">
                         <label for="plazoAnios">Plazo Total (años)</label>
-                        <input type="number" id="plazoAnios" value="6" min="2" max="30">
+                        <select id="plazoAnios">
+                            <option value="2">2 años</option>
+                            <option value="3">3 años</option>
+                            <option value="4">4 años</option>
+                            <option value="5">5 años</option>
+                            <option value="6" selected>6 años</option>
+                            <option value="7">7 años</option>
+                            <option value="8">8 años</option>
+                            <option value="9">9 años</option>
+                            <option value="10">10 años</option>
+                        </select>
                     </div>
                 </div>
-                <button class="calculate-btn" onclick="calcularAmortizacion()">🔄 Recalcular Amortización</button>
+                
+                <div class="payment-strategy">
+                    <h3>💰 Estrategia de Pagos de Capital</h3>
+                    <div class="strategy-selector">
+                        <div class="strategy-option">
+                            <input type="radio" id="uniform" name="strategy" value="uniform" checked>
+                            <label for="uniform">
+                                <div>
+                                    <strong>Uniforme</strong><br>
+                                    <small>Mismo % todos los años</small>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="strategy-option">
+                            <input type="radio" id="progressive" name="strategy" value="progressive">
+                            <label for="progressive">
+                                <div>
+                                    <strong>Progresiva</strong><br>
+                                    <small>Aumenta cada año</small>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="strategy-option">
+                            <input type="radio" id="degressive" name="strategy" value="degressive">
+                            <label for="degressive">
+                                <div>
+                                    <strong>Degresiva</strong><br>
+                                    <small>Disminuye cada año</small>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="strategy-option">
+                            <input type="radio" id="custom" name="strategy" value="custom">
+                            <label for="custom">
+                                <div>
+                                    <strong>Personalizada</strong><br>
+                                    <small>Define cada año</small>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div id="uniformParams" class="strategy-params">
+                        <div class="input-group">
+                            <label for="porcentajeUniforme">Porcentaje de Capital Anual (%)</label>
+                            <input type="number" id="porcentajeUniforme" value="1.0" step="0.1" min="0.1" max="50">
+                        </div>
+                    </div>
+                    
+                    <div id="progressiveParams" class="strategy-params" style="display: none;">
+                        <div class="basic-params">
+                            <div class="input-group">
+                                <label for="porcentajeInicial">Porcentaje Inicial (%)</label>
+                                <input type="number" id="porcentajeInicial" value="0.5" step="0.1" min="0.1" max="20">
+                            </div>
+                            <div class="input-group">
+                                <label for="incrementoAnual">Incremento Anual (%)</label>
+                                <input type="number" id="incrementoAnual" value="0.5" step="0.1" min="0.1" max="10">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="degressiveParams" class="strategy-params" style="display: none;">
+                        <div class="basic-params">
+                            <div class="input-group">
+                                <label for="porcentajeInicialDeg">Porcentaje Inicial (%)</label>
+                                <input type="number" id="porcentajeInicialDeg" value="3.0" step="0.1" min="0.1" max="20">
+                            </div>
+                            <div class="input-group">
+                                <label for="decrementoAnual">Decremento Anual (%)</label>
+                                <input type="number" id="decrementoAnual" value="0.3" step="0.1" min="0.1" max="5">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="customParams" class="strategy-params" style="display: none;">
+                        <div class="yearly-percentages" id="yearlyPercentages">
+                            <!-- Se generan dinámicamente -->
+                        </div>
+                        <div class="info-box">
+                            💡 <strong>Tip:</strong> Los porcentajes se aplican sobre el valor original del terreno. En el último año se liquida automáticamente el saldo restante.
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="calculate-btn" onclick="calcularAmortizacion()">🔄 Calcular Amortización</button>
             </div>
             
             <div class="summary-cards" id="summaryCards" style="display: none;">
@@ -293,7 +478,7 @@
                     <div class="value currency" id="totalIntereses">€0</div>
                 </div>
                 <div class="summary-card">
-                    <h3>Pago Final (Año 6)</h3>
+                    <h3>Pago Final</h3>
                     <div class="value currency" id="pagoFinal">€0</div>
                 </div>
                 <div class="summary-card">
@@ -301,7 +486,7 @@
                     <div class="value currency" id="costoTotal">€0</div>
                 </div>
                 <div class="summary-card">
-                    <h3>Total Pagado Final</h3>
+                    <h3>Total Pagado</h3>
                     <div class="value currency" id="totalPagado">€0</div>
                 </div>
             </div>
@@ -314,6 +499,7 @@
                             <tr>
                                 <th>Año</th>
                                 <th>Saldo Inicial (€)</th>
+                                <th>% Capital</th>
                                 <th>Capital Pagado (€)</th>
                                 <th>Intereses (€)</th>
                                 <th>Pago Total Anual (€)</th>
@@ -348,13 +534,117 @@
             }).format(valor);
         }
         
+        function formatearPorcentaje(valor) {
+            return (valor * 100).toFixed(1) + '%';
+        }
+        
+        // Manejo de estrategias de pago
+        document.addEventListener('DOMContentLoaded', function() {
+            const strategyRadios = document.querySelectorAll('input[name="strategy"]');
+            const plazoSelect = document.getElementById('plazoAnios');
+            
+            strategyRadios.forEach(radio => {
+                radio.addEventListener('change', handleStrategyChange);
+            });
+            
+            plazoSelect.addEventListener('change', handlePlazoChange);
+            
+            // Inicializar
+            handleStrategyChange();
+            handlePlazoChange();
+        });
+        
+        function handleStrategyChange() {
+            const strategy = document.querySelector('input[name="strategy"]:checked').value;
+            
+            // Ocultar todos los parámetros
+            document.querySelectorAll('.strategy-params').forEach(params => {
+                params.style.display = 'none';
+            });
+            
+            // Mostrar los parámetros correspondientes
+            document.getElementById(strategy + 'Params').style.display = 'block';
+            
+            if (strategy === 'custom') {
+                generateYearlyInputs();
+            }
+        }
+        
+        function handlePlazoChange() {
+            const strategy = document.querySelector('input[name="strategy"]:checked').value;
+            if (strategy === 'custom') {
+                generateYearlyInputs();
+            }
+        }
+        
+        function generateYearlyInputs() {
+            const plazo = parseInt(document.getElementById('plazoAnios').value);
+            const container = document.getElementById('yearlyPercentages');
+            container.innerHTML = '';
+            
+            for (let i = 1; i < plazo; i++) { // Excluir último año
+                const yearDiv = document.createElement('div');
+                yearDiv.className = 'year-input';
+                yearDiv.innerHTML = `
+                    <label for="year${i}">Año ${i}</label>
+                    <input type="number" id="year${i}" value="1.0" step="0.1" min="0" max="50">
+                `;
+                container.appendChild(yearDiv);
+            }
+            
+            container.classList.add('active');
+        }
+        
+        function obtenerPorcentajes() {
+            const strategy = document.querySelector('input[name="strategy"]:checked').value;
+            const plazo = parseInt(document.getElementById('plazoAnios').value);
+            const porcentajes = [];
+            
+            switch (strategy) {
+                case 'uniform':
+                    const porcentajeUniforme = parseFloat(document.getElementById('porcentajeUniforme').value) / 100;
+                    for (let i = 1; i < plazo; i++) {
+                        porcentajes.push(porcentajeUniforme);
+                    }
+                    break;
+                    
+                case 'progressive':
+                    const inicial = parseFloat(document.getElementById('porcentajeInicial').value) / 100;
+                    const incremento = parseFloat(document.getElementById('incrementoAnual').value) / 100;
+                    for (let i = 1; i < plazo; i++) {
+                        porcentajes.push(inicial + (incremento * (i - 1)));
+                    }
+                    break;
+                    
+                case 'degressive':
+                    const inicialDeg = parseFloat(document.getElementById('porcentajeInicialDeg').value) / 100;
+                    const decremento = parseFloat(document.getElementById('decrementoAnual').value) / 100;
+                    for (let i = 1; i < plazo; i++) {
+                        const porcentaje = Math.max(0.001, inicialDeg - (decremento * (i - 1)));
+                        porcentajes.push(porcentaje);
+                    }
+                    break;
+                    
+                case 'custom':
+                    for (let i = 1; i < plazo; i++) {
+                        const input = document.getElementById(`year${i}`);
+                        if (input) {
+                            porcentajes.push(parseFloat(input.value) / 100);
+                        }
+                    }
+                    break;
+            }
+            
+            return porcentajes;
+        }
+        
         function calcularAmortizacion() {
             const valorTerreno = parseFloat(document.getElementById('valorTerreno').value);
             const tasaInteres = parseFloat(document.getElementById('tasaInteres').value) / 100;
-            const porcentajeCapital = parseFloat(document.getElementById('porcentajeCapital').value) / 100;
             const plazoAnios = parseInt(document.getElementById('plazoAnios').value);
+            const porcentajes = obtenerPorcentajes();
             
-            if (!valorTerreno || !tasaInteres || !porcentajeCapital || !plazoAnios) {
+            if (!valorTerreno || !tasaInteres || !plazoAnios || porcentajes.length !== plazoAnios - 1) {
                 alert('Por favor, complete todos los campos con valores válidos.');
                 return;
             }
@@ -362,21 +652,22 @@
             datosAmortizacion = [];
             let saldoRestante = valorTerreno;
             let totalIntereses = 0;
-            let capitalPagadoAcumulado = 0;
             
             // Calcular para cada año
             for (let año = 1; año <= plazoAnios; año++) {
                 const saldoInicial = saldoRestante;
-                let capitalPagado, intereses, pagoTotal;
+                let capitalPagado, intereses, pagoTotal, porcentajeAplicado;
                 
                 if (año < plazoAnios) {
-                    // Años intermedios: pagar porcentaje del capital original
-                    capitalPagado = valorTerreno * porcentajeCapital;
+                    // Años intermedios: usar porcentaje configurado
+                    porcentajeAplicado = porcentajes[año - 1];
+                    capitalPagado = valorTerreno * porcentajeAplicado;
                     intereses = saldoInicial * tasaInteres;
                     pagoTotal = capitalPagado + intereses;
                     saldoRestante = saldoInicial - capitalPagado;
                 } else {
                     // Último año: liquidar todo el saldo restante
+                    porcentajeAplicado = saldoRestante / valorTerreno;
                     capitalPagado = saldoRestante;
                     intereses = saldoRestante * tasaInteres;
                     pagoTotal = capitalPagado + intereses;
@@ -384,11 +675,11 @@
                 }
                 
                 totalIntereses += intereses;
-                capitalPagadoAcumulado += capitalPagado;
                 
                 datosAmortizacion.push({
                     año: año,
                     saldoInicial: saldoInicial,
+                    porcentaje: porcentajeAplicado,
                     capitalPagado: capitalPagado,
                     intereses: intereses,
                     pagoTotal: pagoTotal,
@@ -396,10 +687,10 @@
                 });
             }
             
-            mostrarResultados(totalIntereses, capitalPagadoAcumulado, valorTerreno);
+            mostrarResultados(totalIntereses, valorTerreno);
         }
         
-        function mostrarResultados(totalIntereses, capitalPagadoAntes, valorTerreno) {
+        function mostrarResultados(totalIntereses, valorTerreno) {
             const totalPagadoFinal = valorTerreno + totalIntereses;
             
             // Mostrar tarjetas resumen
@@ -424,6 +715,7 @@
                 row.innerHTML = `
                     <td>${fila.año}</td>
                     <td>${formatearMoneda(fila.saldoInicial)}</td>
+                    <td>${formatearPorcentaje(fila.porcentaje)}</td>
                     <td>${formatearMoneda(fila.capitalPagado)}</td>
                     <td>${formatearMoneda(fila.intereses)}</td>
                     <td>${formatearMoneda(fila.pagoTotal)}</td>
@@ -443,25 +735,25 @@
         function descargarExcel() {
             const valorTerreno = parseFloat(document.getElementById('valorTerreno').value);
             const tasaInteres = parseFloat(document.getElementById('tasaInteres').value);
-            const porcentajeCapital = parseFloat(document.getElementById('porcentajeCapital').value);
             const plazoAnios = parseInt(document.getElementById('plazoAnios').value);
+            const strategy = document.querySelector('input[name="strategy"]:checked').value;
             
             // Crear workbook
             const wb = XLSX.utils.book_new();
             
             // Hoja 1: Parámetros y Cuadro de Amortización
             const wsData = [
-                ['CALCULADORA DE AMORTIZACIÓN INMOBILIARIA'],
-                ['Análisis Financiero para Compra de Terreno'],
+                ['CALCULADORA VALENTRIA_JUMILLA'],
+                ['Análisis Financiero para Compra de Terreno - Versión Avanzada'],
                 [''],
                 ['PARÁMETROS DE ENTRADA'],
                 ['Valor del Terreno (€)', valorTerreno],
                 ['Tasa de Interés Anual (%)', tasaInteres],
-                ['Porcentaje Capital Anual (%)', porcentajeCapital],
                 ['Plazo Total (años)', plazoAnios],
+                ['Estrategia de Pago', strategy.charAt(0).toUpperCase() + strategy.slice(1)],
                 [''],
                 ['CUADRO DE AMORTIZACIÓN'],
-                ['Año', 'Saldo Inicial', 'Capital Pagado', 'Intereses', 'Pago Total Anual', 'Saldo Final', 'Pago Acumulado']
+                ['Año', 'Saldo Inicial', '% Capital', 'Capital Pagado', 'Intereses', 'Pago Total Anual', 'Saldo Final', 'Pago Acumulado']
             ];
             
             // Agregar datos de amortización con pago acumulado
@@ -471,6 +763,7 @@
                 wsData.push([
                     fila.año,
                     fila.saldoInicial,
+                    (fila.porcentaje * 100).toFixed(1) + '%',
                     fila.capitalPagado,
                     fila.intereses,
                     fila.pagoTotal,
@@ -484,28 +777,34 @@
             wsData.push(['RESUMEN FINANCIERO']);
             wsData.push(['Total Intereses Pagados', datosAmortizacion.reduce((sum, fila) => sum + fila.intereses, 0)]);
             wsData.push(['Costo Total', valorTerreno + datosAmortizacion.reduce((sum, fila) => sum + fila.intereses, 0)]);
-            wsData.push(['Capital Pagado (años 1-5)', datosAmortizacion.slice(0, -1).reduce((sum, fila) => sum + fila.capitalPagado, 0)]);
             wsData.push(['Pago Final (último año)', datosAmortizacion[datosAmortizacion.length - 1].pagoTotal]);
             
             const ws1 = XLSX.utils.aoa_to_sheet(wsData);
             XLSX.utils.book_append_sheet(wb, ws1, 'Amortización');
             
-            // Hoja 2: Análisis de Sensibilidad
-            const sensitivityData = [
-                ['ANÁLISIS DE SENSIBILIDAD'],
-                ['Variación del Porcentaje de Capital Anual'],
+            // Hoja 2: Análisis de Estrategias
+            const strategyData = [
+                ['ANÁLISIS COMPARATIVO DE ESTRATEGIAS'],
+                ['Comparación entre diferentes estrategias de pago'],
                 [''],
-                ['% Capital', 'Pago Año 6', 'Total Intereses', 'Costo Total']
+                ['Estrategia', 'Total Intereses', 'Pago Final', 'Costo Total']
             ];
             
-            for (let pct = 0.5; pct <= 5.0; pct += 0.5) {
-                const pctDecimal = pct / 100;
+            // Simular diferentes estrategias para comparación
+            const strategies = [
+                {name: 'Uniforme 1%', percentages: Array(plazoAnios-1).fill(0.01)},
+                {name: 'Uniforme 2%', percentages: Array(plazoAnios-1).fill(0.02)},
+                {name: 'Progresiva 0.5-2%', percentages: Array.from({length: plazoAnios-1}, (_, i) => 0.005 + (i * 0.003))},
+                {name: 'Degresiva 3-1%', percentages: Array.from({length: plazoAnios-1}, (_, i) => Math.max(0.01, 0.03 - (i * 0.003)))}
+            ];
+            
+            strategies.forEach(strategy => {
                 let saldo = valorTerreno;
                 let interesesTotal = 0;
                 
-                // Simular años 1-5
-                for (let i = 1; i < plazoAnios; i++) {
-                    const capitalPagado = valorTerreno * pctDecimal;
+                // Simular años intermedios
+                for (let i = 0; i < strategy.percentages.length; i++) {
+                    const capitalPagado = valorTerreno * strategy.percentages[i];
                     const intereses = saldo * (tasaInteres / 100);
                     interesesTotal += intereses;
                     saldo -= capitalPagado;
@@ -516,99 +815,170 @@
                 const pagoFinal = saldo + interesesFinales;
                 interesesTotal += interesesFinales;
                 
-                sensitivityData.push([
-                    pct + '%',
-                    pagoFinal,
+                strategyData.push([
+                    strategy.name,
                     interesesTotal,
+                    pagoFinal,
                     valorTerreno + interesesTotal
                 ]);
-            }
+            });
             
-            const ws2 = XLSX.utils.aoa_to_sheet(sensitivityData);
-            XLSX.utils.book_append_sheet(wb, ws2, 'Análisis Sensibilidad');
+            const ws2 = XLSX.utils.aoa_to_sheet(strategyData);
+            XLSX.utils.book_append_sheet(wb, ws2, 'Comparación Estrategias');
             
             // Descargar archivo
-            XLSX.writeFile(wb, `Amortizacion_Terreno_${new Date().toISOString().split('T')[0]}.xlsx`);
+            XLSX.writeFile(wb, `Amortizacion_Avanzada_VALENTRIA_${new Date().toISOString().split('T')[0]}.xlsx`);
         }
         
         function descargarExcelCompleto() {
             const valorTerreno = parseFloat(document.getElementById('valorTerreno').value);
             const tasaInteres = parseFloat(document.getElementById('tasaInteres').value);
-            const porcentajeCapital = parseFloat(document.getElementById('porcentajeCapital').value);
             const plazoAnios = parseInt(document.getElementById('plazoAnios').value);
             
-            // Crear workbook con fórmulas dinámicas
+            // Crear workbook con fórmulas dinámicas avanzadas
             const wb = XLSX.utils.book_new();
             
-            // Crear hoja con fórmulas
-            const ws = XLSX.utils.aoa_to_sheet([
-                ['CALCULADORA DINÁMICA DE AMORTIZACIÓN INMOBILIARIA'],
+            // Crear hoja con fórmulas dinámicas para estrategia uniforme
+            const uniformData = [
+                ['CALCULADORA DINÁMICA VALENTRIA_JUMILLA - ESTRATEGIA UNIFORME'],
                 [''],
                 ['PARÁMETROS (MODIFICABLES)'],
                 ['Valor del Terreno (€)', 'B4', valorTerreno],
                 ['Tasa de Interés Anual (%)', 'B5', tasaInteres],
-                ['Porcentaje Capital Anual (%)', 'B6', porcentajeCapital],
+                ['Porcentaje Capital Uniforme (%)', 'B6', 1.0],
                 ['Plazo Total (años)', 'B7', plazoAnios],
                 [''],
                 ['CUADRO DE AMORTIZACIÓN DINÁMICO'],
-                ['Año', 'Saldo Inicial', 'Capital Pagado', 'Intereses', 'Pago Total Anual', 'Saldo Final', 'Pago Acumulado'],
-                [1, '=B4', '=IF(A11<B7,B4*B6/100,B11)', '=B11*B5/100', '=C11+D11', '=B11-C11', '=E11'],
-                [2, '=F11', '=IF(A12<B7,B4*B6/100,B12)', '=B12*B5/100', '=C12+D12', '=B12-C12', '=G11+E12'],
-                [3, '=F12', '=IF(A13<B7,B4*B6/100,B13)', '=B13*B5/100', '=C13+D13', '=B13-C13', '=G12+E13'],
-                [4, '=F13', '=IF(A14<B7,B4*B6/100,B14)', '=B14*B5/100', '=C14+D14', '=B14-C14', '=G13+E14'],
-                [5, '=F14', '=IF(A15<B7,B4*B6/100,B15)', '=B15*B5/100', '=C15+D15', '=B15-C15', '=G14+E15'],
-                [6, '=F15', '=IF(A16<B7,B4*B6/100,B16)', '=B16*B5/100', '=C16+D16', '=B16-C16', '=G15+E16'],
-                [''],
-                ['RESUMEN AUTOMÁTICO'],
-                ['Total Intereses', '=SUM(D11:D16)'],
-                ['Costo Total', '=B4+B19'],
-                ['Capital Pagado (años 1-5)', '=SUM(C11:C15)'],
-                ['Pago Final (último año)', '=E16'],
-                ['Total Pagado Acumulado', '=G16']
-            ]);
-            
-            // Configurar anchos de columna
-            ws['!cols'] = [
-                {wch: 8}, {wch: 15}, {wch: 15}, {wch: 12}, {wch: 18}, {wch: 15}, {wch: 18}
+                ['Año', 'Saldo Inicial', '% Capital', 'Capital Pagado', 'Intereses', 'Pago Total', 'Saldo Final', 'Pago Acumulado']
             ];
             
-            XLSX.utils.book_append_sheet(wb, ws, 'Calculadora Dinámica');
+            // Generar filas dinámicamente según el plazo
+            for (let i = 1; i <= plazoAnios; i++) {
+                if (i === 1) {
+                    uniformData.push([
+                        i,
+                        '=B4',
+                        '=IF(A' + (10 + i) + '<B7,B6/100,B' + (10 + i) + '/B4)',
+                        '=IF(A' + (10 + i) + '<B7,B4*B6/100,B' + (10 + i) + ')',
+                        '=B' + (10 + i) + '*B5/100',
+                        '=C' + (10 + i) + '+D' + (10 + i),
+                        '=B' + (10 + i) + '-C' + (10 + i),
+                        '=E' + (10 + i)
+                    ]);
+                } else {
+                    uniformData.push([
+                        i,
+                        '=F' + (9 + i),
+                        '=IF(A' + (10 + i) + '<B7,B6/100,B' + (10 + i) + '/B4)',
+                        '=IF(A' + (10 + i) + '<B7,B4*B6/100,B' + (10 + i) + ')',
+                        '=B' + (10 + i) + '*B5/100',
+                        '=C' + (10 + i) + '+D' + (10 + i),
+                        '=B' + (10 + i) + '-C' + (10 + i),
+                        '=G' + (9 + i) + '+E' + (10 + i)
+                    ]);
+                }
+            }
             
-            // Crear segunda hoja con validaciones
-            const validationSheet = XLSX.utils.aoa_to_sheet([
+            // Agregar resumen
+            const resumenRow = 11 + plazoAnios;
+            uniformData.push(['']);
+            uniformData.push(['RESUMEN AUTOMÁTICO']);
+            uniformData.push(['Total Intereses', '=SUM(D11:D' + (10 + plazoAnios) + ')']);
+            uniformData.push(['Costo Total', '=B4+B' + (resumenRow + 2)]);
+            uniformData.push(['Pago Final', '=E' + (10 + plazoAnios)]);
+            uniformData.push(['Total Pagado Acumulado', '=G' + (10 + plazoAnios)]);
+            
+            const ws1 = XLSX.utils.aoa_to_sheet(uniformData);
+            ws1['!cols'] = Array(8).fill({wch: 15});
+            XLSX.utils.book_append_sheet(wb, ws1, 'Calculadora Uniforme');
+            
+            // Hoja de estrategias personalizadas
+            const customData = [
+                ['CALCULADORA PERSONALIZADA - PORCENTAJES POR AÑO'],
+                [''],
+                ['INSTRUCCIONES'],
+                ['1. Modifique el valor del terreno en B5'],
+                ['2. Modifique la tasa de interés en B6'],
+                ['3. Modifique los porcentajes de cada año en la columna C (filas 11 en adelante)'],
+                ['4. El último año se liquida automáticamente'],
+                [''],
+                ['Valor del Terreno (€)', valorTerreno],
+                ['Tasa de Interés Anual (%)', tasaInteres],
+                [''],
+                ['Año', 'Saldo Inicial', '% Capital (EDITABLE)', 'Capital Pagado', 'Intereses', 'Pago Total', 'Saldo Final']
+            ];
+            
+            // Generar años con porcentajes editables
+            for (let i = 1; i <= plazoAnios; i++) {
+                if (i === 1) {
+                    customData.push([
+                        i,
+                        '=B5',
+                        i < plazoAnios ? 1.0 : '=B12/B5*100',
+                        '=IF(A12<' + plazoAnios + ',B5*C12/100,B12)',
+                        '=B12*B6/100',
+                        '=D12+E12',
+                        '=B12-D12'
+                    ]);
+                } else {
+                    const currentRow = 11 + i;
+                    const prevRow = 10 + i;
+                    customData.push([
+                        i,
+                        '=G' + prevRow,
+                        i < plazoAnios ? 1.0 : '=B' + currentRow + '/B5*100',
+                        '=IF(A' + currentRow + '<' + plazoAnios + ',B5*C' + currentRow + '/100,B' + currentRow + ')',
+                        '=B' + currentRow + '*B6/100',
+                        '=D' + currentRow + '+E' + currentRow,
+                        '=B' + currentRow + '-D' + currentRow
+                    ]);
+                }
+            }
+            
+            const ws2 = XLSX.utils.aoa_to_sheet(customData);
+            ws2['!cols'] = Array(7).fill({wch: 18});
+            XLSX.utils.book_append_sheet(wb, ws2, 'Personalizada');
+            
+            // Hoja de validaciones
+            const validationData = [
                 ['VALIDACIONES Y CONTROLES'],
                 [''],
-                ['Verificación de Cálculos'],
-                ['Suma de Capital Pagado', '=SUM(Calculadora Dinámica!C11:C16)'],
-                ['Debe igualar Valor del Terreno', '=Calculadora Dinámica!B4'],
-                ['Diferencia (debe ser 0)', '=B4-B5'],
+                ['Verificación Calculadora Uniforme'],
+                ['Suma de Capital Pagado', '=SUM(Calculadora Uniforme!C11:C' + (10 + plazoAnios) + ')'],
+                ['Debe igualar Valor del Terreno', '=Calculadora Uniforme!B4'],
+                ['Diferencia (debe ser 0)', '=ABS(B4-B5)'],
+                ['Estado Uniforme', '=IF(B6<0.01,"✓ CORRECTO","❌ ERROR")'],
                 [''],
-                ['Estado de la Validación', '=IF(ABS(B6)<0.01,"✓ CORRECTO","❌ ERROR")'],
+                ['Verificación Personalizada'],
+                ['Suma de Capital Pagado', '=SUM(Personalizada!D12:D' + (11 + plazoAnios) + ')'],
+                ['Debe igualar Valor del Terreno', '=Personalizada!B5'],
+                ['Diferencia (debe ser 0)', '=ABS(B10-B11)'],
+                ['Estado Personalizada', '=IF(B12<0.01,"✓ CORRECTO","❌ ERROR")'],
                 [''],
-                ['INSTRUCCIONES DE USO'],
-                ['1. Modifique solo las celdas B4:B7 en la hoja "Calculadora Dinámica"'],
-                ['2. Los cálculos se actualizarán automáticamente'],
-                ['3. Verifique que la validación muestre "✓ CORRECTO"'],
-                ['4. El porcentaje de capital se aplica solo a los primeros (n-1) años'],
-                ['5. En el último año se liquida todo el saldo restante']
-            ]);
+                ['INSTRUCCIONES AVANZADAS'],
+                ['• Use la hoja "Calculadora Uniforme" para porcentajes iguales todos los años'],
+                ['• Use la hoja "Personalizada" para definir porcentajes específicos por año'],
+                ['• Los cálculos se actualizan automáticamente al cambiar parámetros'],
+                ['• Verifique siempre que las validaciones muestren "✓ CORRECTO"'],
+                ['• En estrategias personalizadas, NO modifique el % del último año']
+            ];
             
-            XLSX.utils.book_append_sheet(wb, validationSheet, 'Validaciones');
+            const ws3 = XLSX.utils.aoa_to_sheet(validationData);
+            XLSX.utils.book_append_sheet(wb, ws3, 'Validaciones');
             
             // Descargar archivo
-            XLSX.writeFile(wb, `Calculadora_Dinamica_Terreno_${new Date().toISOString().split('T')[0]}.xlsx`);
+            XLSX.writeFile(wb, `Calculadora_Dinamica_Avanzada_VALENTRIA_${new Date().toISOString().split('T')[0]}.xlsx`);
         }
         
-        // Calcular automáticamente al cargar
-        window.onload = function() {
-            calcularAmortizacion();
-        };
-        
-        // Recalcular cuando cambien los inputs
-        document.getElementById('valorTerreno').addEventListener('input', calcularAmortizacion);
-        document.getElementById('tasaInteres').addEventListener('input', calcularAmortizacion);
-        document.getElementById('porcentajeCapital').addEventListener('input', calcularAmortizacion);
-        document.getElementById('plazoAnios').addEventListener('input', calcularAmortizacion);
+        // Recalcular automáticamente cuando cambien los inputs básicos
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('valorTerreno').addEventListener('input', calcularAmortizacion);
+            document.getElementById('tasaInteres').addEventListener('input', calcularAmortizacion);
+            document.getElementById('plazoAnios').addEventListener('change', calcularAmortizacion);
+            
+            // Calcular automáticamente al cargar
+            setTimeout(calcularAmortizacion, 100);
+        });
     </script>
 </body>
 </html>
